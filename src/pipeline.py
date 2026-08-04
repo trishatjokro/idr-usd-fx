@@ -42,29 +42,46 @@ BRENT = "DCOILBRENTEU"  # Brent crude, USD/barrel
 HEADERS = {"User-Agent": "idr-usd-fx/1.0 (portfolio analysis)"}
 
 
-def fetch_fred_series(series: str, timeout: int = 60) -> pd.DataFrame:
-    """Download one FRED series as a tidy (date, value) DataFrame.
+RAW_DIR = DATA_DIR / "raw"
 
-    FRED marks missing observations with '.'; those rows are dropped here.
-    Returns columns: date (datetime64), <series> (float).
+
+def _load_series_text(series: str, timeout: int = 60) -> str:
+    """Return the raw CSV text for a FRED series.
+
+    Prefers a locally cached copy at data/raw/<series>.csv (populated by
+    scripts/fetch_fred.sh) so the pipeline is reproducible and offline-friendly;
+    falls back to a live HTTP download with retries when no cache exists.
     """
+    cached = RAW_DIR / f"{series}.csv"
+    if cached.exists() and cached.stat().st_size > 0:
+        print(f"  {series}: using cached data/raw/{series}.csv")
+        return cached.read_text()
+
     url = FRED_CSV.format(series=series)
     last_exc = None
-    for attempt in range(1, 5):  # FRED occasionally drops the connection
+    for attempt in range(1, 6):  # FRED occasionally drops the connection
         try:
             resp = requests.get(url, headers=HEADERS, timeout=timeout)
             resp.raise_for_status()
-            break
+            RAW_DIR.mkdir(parents=True, exist_ok=True)
+            cached.write_text(resp.text)  # cache for next run
+            return resp.text
         except requests.exceptions.RequestException as exc:
             last_exc = exc
             wait = 2 * attempt
             print(f"  {series}: attempt {attempt} failed ({type(exc).__name__}); "
                   f"retrying in {wait}s")
             time.sleep(wait)
-    else:
-        raise RuntimeError(f"failed to fetch {series} after retries: {last_exc}")
+    raise RuntimeError(f"failed to fetch {series} after retries: {last_exc}")
 
-    df = pd.read_csv(io.StringIO(resp.text))
+
+def fetch_fred_series(series: str, timeout: int = 60) -> pd.DataFrame:
+    """Load one FRED series as a tidy (date, value) DataFrame.
+
+    FRED marks missing observations with '.'; those rows are dropped here.
+    Returns columns: date (datetime64), <series> (float).
+    """
+    df = pd.read_csv(io.StringIO(_load_series_text(series, timeout=timeout)))
     # FRED's date column has been named DATE (older) or observation_date (newer).
     date_col = df.columns[0]
     val_col = df.columns[1]
