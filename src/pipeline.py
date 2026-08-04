@@ -49,8 +49,20 @@ def fetch_fred_series(series: str, timeout: int = 60) -> pd.DataFrame:
     Returns columns: date (datetime64), <series> (float).
     """
     url = FRED_CSV.format(series=series)
-    resp = requests.get(url, headers=HEADERS, timeout=timeout)
-    resp.raise_for_status()
+    last_exc = None
+    for attempt in range(1, 5):  # FRED occasionally drops the connection
+        try:
+            resp = requests.get(url, headers=HEADERS, timeout=timeout)
+            resp.raise_for_status()
+            break
+        except requests.exceptions.RequestException as exc:
+            last_exc = exc
+            wait = 2 * attempt
+            print(f"  {series}: attempt {attempt} failed ({type(exc).__name__}); "
+                  f"retrying in {wait}s")
+            time.sleep(wait)
+    else:
+        raise RuntimeError(f"failed to fetch {series} after retries: {last_exc}")
 
     df = pd.read_csv(io.StringIO(resp.text))
     # FRED's date column has been named DATE (older) or observation_date (newer).
