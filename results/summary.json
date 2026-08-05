@@ -1,0 +1,21 @@
+{
+  "as_of": "2026-07-31",
+  "history_start": "1999-01-04",
+  "history_end": "2026-07-31",
+  "n_obs": 7061,
+  "current_rate": 18052.4,
+  "min_rate": 6614.05,
+  "max_rate": 18150.45,
+  "min_rate_date": "1999-06-28",
+  "max_rate_date": "2026-06-08",
+  "ytd_change_pct": 7.99,
+  "chg_1y_pct": 9.43,
+  "chg_5y_pct": 24.92,
+  "current_vol30_annualized": 5.95,
+  "current_vol_percentile": 43.05,
+  "mean_annualized_vol": 8.68,
+  "worst_1d_ret_pct": -8.43,
+  "worst_1d_date": "2001-07-23",
+  "best_1d_ret_pct": 7.74,
+  "best_1d_date": "1999-01-13"
+}
