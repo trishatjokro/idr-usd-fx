@@ -1,0 +1,27 @@
+{
+  "window_days": 5,
+  "baseline_mean_abs_pct": 0.9067,
+  "by_kind": {
+    "BI": {
+      "n_events": 120,
+      "mean_abs_pct": 0.5369,
+      "vs_baseline_ratio": 0.592,
+      "p_value": 1.0,
+      "significant_5pct": false
+    },
+    "FOMC": {
+      "n_events": 103,
+      "mean_abs_pct": 0.7711,
+      "vs_baseline_ratio": 0.85,
+      "p_value": 0.8646,
+      "significant_5pct": false
+    },
+    "Political": {
+      "n_events": 10,
+      "mean_abs_pct": 1.3872,
+      "vs_baseline_ratio": 1.53,
+      "p_value": 0.1234,
+      "significant_5pct": false
+    }
+  }
+}
