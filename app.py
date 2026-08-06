@@ -349,7 +349,7 @@ if selected_kinds and not events.empty:
             ))
 
 style_layout(price_fig, "IDR per USD")
-st.plotly_chart(price_fig, use_container_width=True)
+st.plotly_chart(price_fig, width='stretch')
 
 # --------------------------------------------------------------------------- #
 # 6. Rolling volatility (fractional → %)
@@ -370,7 +370,7 @@ if "vol90" in m.columns:
         hovertemplate="%{x|%Y-%m-%d}<br>90d %{y:.1f}%<extra></extra>",
     ))
 style_layout(vol_fig, "Annualized volatility (%)")
-st.plotly_chart(vol_fig, use_container_width=True)
+st.plotly_chart(vol_fig, width='stretch')
 
 # --------------------------------------------------------------------------- #
 # 7. Regimes — sharpest episodes
@@ -398,7 +398,7 @@ else:
     st.dataframe(
         show,
         hide_index=True,
-        use_container_width=True,
+        width='stretch',
         column_config={
             "Start rate": st.column_config.NumberColumn(format="%.0f"),
             "End rate": st.column_config.NumberColumn(format="%.0f"),
@@ -451,7 +451,7 @@ else:
         "two-sided permutation test (5,000 resamples) at the 5% level."
     )
     st.dataframe(
-        ev_df, hide_index=True, use_container_width=True,
+        ev_df, hide_index=True, width='stretch',
         column_config={
             "Mean |move| %": st.column_config.NumberColumn(format="%.3f"),
             "Matched baseline %": st.column_config.NumberColumn(format="%.3f"),
@@ -523,7 +523,7 @@ if regional_cols_available and corr is not None:
 
     if plotted_any:
         style_layout(reg_fig, "Indexed to 100 at range start")
-        st.plotly_chart(reg_fig, use_container_width=True)
+        st.plotly_chart(reg_fig, width='stretch')
 
     # Correlation numbers.
     corr_map = corr.get("daily_return_correlation_with_IDR", {}) or {}
