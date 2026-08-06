@@ -12,10 +12,11 @@ _Data: FRED `DEXINUS`, 1999-01-04 to 2026-07-31 (7,061 trading days). Generated 
 - The single worst day was **-8.43%** (2001-07-23); the best **+7.74%** (1999-01-13).
 
 ## 3. Do central-bank meetings actually move the rate?
-- Baseline mean |5-day move| across all days: **0.9067%**.
-- **BI** (120 events): mean |move| **0.5369%** = 0.592× baseline — **not more** than baseline (permutation p=1.0, not significant).
-- **FOMC** (103 events): mean |move| **0.7711%** = 0.85× baseline — **not more** than baseline (permutation p=0.8646, not significant).
-- **Political** (10 events): mean |move| **1.3872%** = 1.53× baseline — **more** than baseline (permutation p=0.1234, not significant).
+- Test: mean |5-trading-day move| after each event vs. a **period-matched** baseline (non-event days in the same era), permutation-tested (5,000 resamples).
+- **BI** (120 events, 2016-01-14..2025-12-17): mean |move| **0.5369%** vs matched baseline 0.6645% = **0.808×** — **not more** — if anything calmer than baseline (p=0.0626, not significant).
+- **FOMC** (103 events, 2013-01-30..2025-12-10): mean |move| **0.7711%** vs matched baseline 0.7182% = **1.074×** — **more** than baseline (p=0.5188, not significant).
+- **Political** (10 events, 2013-05-22..2025-04-02): mean |move| **1.3872%** vs matched baseline 0.7221% = **1.921×** — **more** than baseline (p=0.0124, significant at 5%).
+- Read: scheduled, well-anticipated policy meetings do **not** move IDR/USD more than an ordinary day in the same period; the larger moves cluster around unscheduled political / global-macro shocks.
 - Regional co-movement (daily-return corr): MYR 0.311, THB 0.324, SGD 0.377, PHP 0.312.
 
 _“So what”: this is a descriptive/diagnostic study — no forecast. The point is a defensible read of trend, risk regime, and event sensitivity._
