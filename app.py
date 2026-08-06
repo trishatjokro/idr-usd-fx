@@ -208,7 +208,8 @@ if metrics is None or summary is None or metrics.empty:
 
 as_of = summary.get("as_of", "n/a")
 st.caption(
-    f"Source: FRED series **DEXINUS** (IDR per USD). "
+    f"Source: **ECB** euro reference rates (via DBnomics), IDR/USD reconstructed "
+    f"from the USD cross-rate; FRED `DEXINUS` is the spec'd source & cross-check. "
     f"Data as of **{as_of}** · "
     f"{summary.get('n_obs', 0):,} trading days "
     f"({summary.get('history_start', '?')} → {summary.get('history_end', '?')})."
