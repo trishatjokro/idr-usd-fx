@@ -87,7 +87,7 @@ def build_metrics(rate: pd.DataFrame) -> pd.DataFrame:
 def pct_change_over(df: pd.DataFrame, days: int) -> float | None:
     """% change in rate from ~`days` calendar days ago to the latest obs."""
     latest = df.iloc[-1]
-    cutoff = latest["date"] - pd.Timedelta(days=days)
+    cutoff = latest["date"] - pd.Timedelta(days=int(days))
     past = df[df["date"] <= cutoff]
     if past.empty:
         return None
