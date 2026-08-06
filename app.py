@@ -416,15 +416,15 @@ if evstudy is None or "by_kind" not in evstudy or not evstudy.get("by_kind"):
     st.info(f"Event study unavailable — {note}.")
 else:
     window = evstudy.get("window_days", "?")
-    baseline = evstudy.get("baseline_mean_abs_pct")
     rows = []
     sig_kinds, mover_kinds = [], []
     for kind, r in evstudy["by_kind"].items():
         if "mean_abs_pct" not in r:  # e.g. 'too few events'
             rows.append({
-                "Kind": kind, "Events": r.get("n_events", 0),
-                "Mean |move| %": None, "× baseline": None,
-                "p-value": None, "Significant?": r.get("note", "n/a"),
+                "Kind": kind, "Events": r.get("n_events", 0), "Period": "—",
+                "Mean |move| %": None, "Matched baseline %": None,
+                "× baseline": None, "p-value": None,
+                "Significant?": r.get("note", "n/a"),
             })
             continue
         ratio = r.get("vs_baseline_ratio")
@@ -436,20 +436,25 @@ else:
         rows.append({
             "Kind": kind,
             "Events": r.get("n_events"),
+            "Period": r.get("date_range", "—"),
             "Mean |move| %": r.get("mean_abs_pct"),
+            "Matched baseline %": r.get("matched_baseline_mean_abs_pct"),
             "× baseline": ratio,
             "p-value": r.get("p_value"),
             "Significant?": "Yes ✓" if is_sig else "No",
         })
     ev_df = pd.DataFrame(rows)
     st.caption(
-        f"Baseline mean |{window}-day move| across all trading days: "
-        f"**{baseline}%**. 'Significant?' is a permutation test at the 5% level."
+        f"Mean |{window}-trading-day move| after each event vs. a **period-matched** "
+        "baseline (non-event days within the same date range), so the calmer recent "
+        "era isn't compared against the 1999–2008 crisis spikes. 'Significant?' is a "
+        "two-sided permutation test (5,000 resamples) at the 5% level."
     )
     st.dataframe(
         ev_df, hide_index=True, use_container_width=True,
         column_config={
             "Mean |move| %": st.column_config.NumberColumn(format="%.3f"),
+            "Matched baseline %": st.column_config.NumberColumn(format="%.3f"),
             "× baseline": st.column_config.NumberColumn(format="%.2f"),
             "p-value": st.column_config.NumberColumn(format="%.4f"),
         },
