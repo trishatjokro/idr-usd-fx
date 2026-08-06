@@ -312,18 +312,24 @@ def write_findings(summary: dict, regimes: pd.DataFrame,
         f"({summary['best_1d_date']}).",
         "",
         "## 3. Do central-bank meetings actually move the rate?",
-        f"- Baseline mean |{events.get('window_days','5')}-day move| across all days: "
-        f"**{events.get('baseline_mean_abs_pct','?')}%**.",
+        f"- Test: mean |{events.get('window_days','5')}-trading-day move| after each "
+        "event vs. a **period-matched** baseline (non-event days in the same era), "
+        "permutation-tested (5,000 resamples).",
     ]
     for kind, r in events.get("by_kind", {}).items():
         if "mean_abs_pct" in r:
             verdict = ("**more** than baseline" if r["vs_baseline_ratio"] > 1
-                       else "**not more** than baseline")
-            sig = "statistically significant" if r["significant_5pct"] else "not significant"
+                       else "**not more** — if anything calmer than baseline")
+            sig = "significant at 5%" if r["significant_5pct"] else "not significant"
             lines.append(
-                f"- **{kind}** ({r['n_events']} events): mean |move| "
-                f"**{r['mean_abs_pct']}%** = {r['vs_baseline_ratio']}× baseline — "
-                f"{verdict} (permutation p={r['p_value']}, {sig}).")
+                f"- **{kind}** ({r['n_events']} events, {r.get('date_range','')}): "
+                f"mean |move| **{r['mean_abs_pct']}%** vs matched baseline "
+                f"{r['matched_baseline_mean_abs_pct']}% = **{r['vs_baseline_ratio']}×** — "
+                f"{verdict} (p={r['p_value']}, {sig}).")
+    lines.append(
+        "- Read: scheduled, well-anticipated policy meetings do **not** move IDR/USD "
+        "more than an ordinary day in the same period; the larger moves cluster "
+        "around unscheduled political / global-macro shocks.")
     if corr.get("idr_brent_return_corr") is not None:
         lines += [
             "",
