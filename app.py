@@ -196,7 +196,7 @@ summary = load_summary()
 # Hard requirement: metrics + summary are the backbone. Without them, guide the
 # user to the pipeline and stop — never crash.
 if metrics is None or summary is None or metrics.empty:
-    st.caption("Source: FRED series **DEXINUS** (Indonesian Rupiah to US Dollar).")
+    st.caption("Source: ECB euro reference rates (via DBnomics); IDR/USD reconstructed.")
     st.warning(
         "No analysis artifacts found yet. Generate them first, then reload:\n\n"
         "```\npython src/pipeline.py && python src/analysis.py\n```\n\n"
