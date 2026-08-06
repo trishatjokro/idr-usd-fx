@@ -175,47 +175,75 @@ def _fwd_return(df: pd.DataFrame, idx: int, window: int) -> float | None:
 
 def event_study(df: pd.DataFrame, events: pd.DataFrame,
                 window: int = FWD_WINDOW, n_perm: int = 5000) -> dict:
-    """For each event kind, test whether the |5-day forward move| following the
-    event exceeds a baseline of all trading days, via a permutation test."""
+    """For each event kind, test whether the |window-day forward move| following
+    the event exceeds a **period-matched** baseline, via a permutation test.
+
+    Methodology note: a naive baseline over *all* history (1999-2026) would be
+    confounded, because scheduled meetings only exist in the calmer 2013-2025
+    era while the full sample includes the 1999-2002 and 2008 crisis spikes. So
+    for each kind the baseline is restricted to trading days inside that kind's
+    own [first_event, last_event] range, with the event forward-windows removed
+    to avoid contaminating the baseline with the very effect being tested.
+    """
     d = df.reset_index(drop=True)
-    date_to_idx = {t: i for i, t in enumerate(d["date"])}
     all_dates = d["date"].values
 
-    # Baseline: |5-day forward return| for every trading day.
-    baseline = np.array([
+    # Full-history baseline kept for reference/context only.
+    full_baseline = np.array([
         abs(r) for i in range(len(d))
         if (r := _fwd_return(d, i, window)) is not None
     ])
-    baseline_mean = float(np.nanmean(baseline))
-
     rng = np.random.default_rng(42)  # deterministic
-    out: dict = {"window_days": window, "baseline_mean_abs_pct": round(baseline_mean * 100, 4),
-                 "by_kind": {}}
+
+    out: dict = {
+        "window_days": window,
+        "full_history_baseline_mean_abs_pct": round(float(full_baseline.mean()) * 100, 4),
+        "baseline_type": "period-matched (non-event days within each kind's date range)",
+        "by_kind": {},
+    }
 
     for kind, grp in events.groupby("kind"):
         # snap each event to the next available trading day
         idxs = []
         for ed in grp["date"]:
-            pos = np.searchsorted(all_dates, np.datetime64(ed))
+            pos = int(np.searchsorted(all_dates, np.datetime64(ed)))
             if pos < len(d):
-                idxs.append(int(pos))
+                idxs.append(pos)
+        idxs = sorted(set(idxs))
         moves = np.array([
             abs(r) for i in idxs if (r := _fwd_return(d, i, window)) is not None
         ])
         if len(moves) < 5:
             out["by_kind"][kind] = {"n_events": int(len(moves)), "note": "too few events"}
             continue
+
+        # Period-matched baseline: days within the kind's date span, excluding
+        # any day that falls inside an event's forward window.
+        lo, hi = min(idxs), max(idxs)
+        excluded = set()
+        for i in idxs:
+            excluded.update(range(i, min(i + window + 1, len(d))))
+        base_idx = [i for i in range(lo, hi + 1) if i not in excluded]
+        base = np.array([
+            abs(r) for i in base_idx if (r := _fwd_return(d, i, window)) is not None
+        ])
+        base_mean = float(base.mean())
         obs_mean = float(moves.mean())
-        # Permutation: draw same-size random samples from baseline, compare means.
+
+        # Two-sided permutation test vs the matched baseline.
         k = len(moves)
         perm_means = np.array([
-            rng.choice(baseline, size=k, replace=False).mean() for _ in range(n_perm)
+            rng.choice(base, size=k, replace=False).mean() for _ in range(n_perm)
         ])
-        p_value = float((perm_means >= obs_mean).mean())
+        # p = P(|perm - base_mean| >= |obs - base_mean|)
+        obs_dev = abs(obs_mean - base_mean)
+        p_value = float((np.abs(perm_means - base_mean) >= obs_dev).mean())
         out["by_kind"][kind] = {
             "n_events": int(k),
+            "date_range": f"{d.iloc[lo]['date'].date()}..{d.iloc[hi]['date'].date()}",
             "mean_abs_pct": round(obs_mean * 100, 4),
-            "vs_baseline_ratio": round(obs_mean / baseline_mean, 3),
+            "matched_baseline_mean_abs_pct": round(base_mean * 100, 4),
+            "vs_baseline_ratio": round(obs_mean / base_mean, 3),
             "p_value": round(p_value, 4),
             "significant_5pct": bool(p_value < 0.05),
         }
