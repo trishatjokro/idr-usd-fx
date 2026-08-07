@@ -30,15 +30,25 @@ toggleable event overlays.
 
 | Source | Series | Use |
 | --- | --- | --- |
-| **FRED** (Federal Reserve Economic Data) | `DEXINUS` | Primary IDR/USD daily rate |
-| FRED | `DEXMAUS`, `DEXTHUS`, `DEXSIUS` | Regional FX comparison (MYR, THB, SGD) |
-| FRED | `DCOILBRENTEU` | Brent crude — commodity-linkage enrichment |
-| yfinance | `IDR=X` | Independent cross-check of the recent window |
+| **ECB euro reference rates** (via [DBnomics](https://db.nomics.world), no API key) | `ECB/EXR` IDR, USD, MYR, THB, SGD, PHP per EUR | **Implemented** primary + regional rates |
+| FRED (Federal Reserve Economic Data) | `DEXINUS` | Spec'd primary source; used as an independent cross-check |
 | federalreserve.gov / bi.go.id | meeting calendars | FOMC & Bank Indonesia event dates |
 
-FRED is treated as the source of truth; yfinance is used only to sanity-check the
-most recent window. Provenance and confidence of the hand-curated event dates are
-documented in [`events/EVENTS_SOURCES.md`](events/EVENTS_SOURCES.md).
+**On the source substitution:** the project spec names FRED `DEXINUS` as the
+primary series, but FRED's public CSV endpoint tarpits repeated automated requests
+(the connection opens, then no response body is ever returned), so it was not
+reliably reachable from the build environment. To keep the pipeline reproducible
+for anyone, the *implemented* source is the **ECB euro reference rates** — an
+official, widely-cited daily FX series back to 1999 — pulled via DBnomics, with the
+USD cross-rate reconstructed as `IDR/USD = (IDR per EUR) / (USD per EUR)`. ECB and
+FRED differ only marginally (fixing time). When FRED is reachable, `pipeline.py`
+uses it to cross-check the reconstructed series automatically. A bonus of ECB: it
+also covers the Philippine peso (PHP), which FRED's daily series does not.
+
+Provenance and confidence of the hand-curated event dates — including an explicit
+flag that **Bank Indonesia dates for 2016–2020 are month-accurate but
+day-approximate** — are documented in
+[`events/EVENTS_SOURCES.md`](events/EVENTS_SOURCES.md).
 
 ### Cleaning decisions
 - FRED marks non-trading days (weekends, US bank holidays) with `.`. These rows
