@@ -81,17 +81,17 @@ day-approximate** — are documented in
 ```
 idr-usd-fx/
 ├── src/
-│   ├── pipeline.py     # Phase 1 — fetch + clean FRED data, cross-check yfinance
+│   ├── pipeline.py     # Phase 1 — fetch (ECB via DBnomics) + clean, FRED cross-check
 │   └── analysis.py     # Phase 2 — metrics, regimes, event study, findings
 ├── app.py              # Phase 3 — Streamlit dashboard
 ├── data/
 │   ├── idr_usd_daily.csv   # cleaned primary series (date, rate)
-│   ├── fx_wide.csv         # IDR + regional FX + Brent, aligned
-│   ├── raw/                # cached raw FRED downloads (reproducibility)
+│   ├── fx_wide.csv         # IDR + regional FX (MYR, THB, SGD, PHP), aligned
+│   ├── raw/                # cached raw downloads (reproducibility / offline)
 │   └── data_notes.md       # source + cleaning documentation
-├── events/                 # curated FOMC / BI / political event dates
+├── events/                 # curated FOMC / BI / political event dates + sources
 ├── results/                # generated analysis artifacts + findings.md
-├── scripts/fetch_fred.sh   # patient FRED downloader (see note below)
+├── scripts/fetch_fred.sh   # optional patient FRED downloader (cross-check only)
 └── requirements.txt
 ```
 
