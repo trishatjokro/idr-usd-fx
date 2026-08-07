@@ -346,8 +346,22 @@ def write_findings(summary: dict, regimes: pd.DataFrame,
     if regional:
         pairs = ", ".join(f"{k} {v}" for k, v in regional.items())
         lines.append(f"- Regional co-movement (daily-return corr): {pairs}.")
-    lines += ["", "_“So what”: this is a descriptive/diagnostic study — no forecast. "
-              "The point is a defensible read of trend, risk regime, and event sensitivity._", ""]
+    lines += [
+        "",
+        "## Caveats",
+        "- FOMC dates are verified against federalreserve.gov. Bank Indonesia RDG "
+        "dates for 2021–2025 are verified against bi.go.id; **2016–2020 are "
+        "month-accurate but day-approximate** (see `events/EVENTS_SOURCES.md`), which "
+        "adds noise to the BI event window — a reason to read the BI result as "
+        "\"no amplification\" rather than a precise multiplier.",
+        "- \"Political\" events mark the trigger day, not necessarily the peak FX move.",
+        "- IDR/USD is reconstructed from ECB euro reference rates, not FRED DEXINUS; "
+        "the two differ only marginally (fixing time).",
+        "",
+        "_“So what”: this is a descriptive/diagnostic study — no forecast. "
+        "The point is a defensible read of trend, risk regime, and event sensitivity._",
+        "",
+    ]
     (RESULTS_DIR / "findings.md").write_text("\n".join(lines))
 
 
