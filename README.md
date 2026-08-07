@@ -17,9 +17,25 @@ trading signal. The goal is correctness and clear reasoning end to end.
 
 The headline findings, regenerated from the data on every run, live in
 **[`results/findings.md`](results/findings.md)** (a one-page analyst-style memo).
-They cover: the rupiah's long-run depreciation path and its sharpest episodes,
-how regime-dependent volatility is, whether FOMC / Bank Indonesia meetings move
-the rate more than an average day (permutation-tested), and the IDR–Brent link.
+The three headline results:
+
+**1. The rupiah's long-run path is depreciation, punctuated by shocks** — from
+~6,600 (1999) to ~18,000 IDR/USD (2026); the sharpest single quarter was the
+2008 GFC (+37%).
+
+![Trend](assets/01_trend.png)
+
+**2. Volatility is highly regime-dependent** — calm for years, then violent around
+crises (2001, 2008, 2013 taper tantrum, 2020 COVID).
+
+![Volatility](assets/02_volatility.png)
+
+**3. Scheduled central-bank meetings do *not* move the rate more than an ordinary
+day** — FOMC and Bank Indonesia meeting windows are indistinguishable from a
+period-matched baseline, while *unscheduled* political/macro shocks nearly double
+the typical 5-day move and clear statistical significance (permutation p ≈ 0.01).
+
+![Event study](assets/03_event_study.png)
 
 The interactive dashboard presents the same story with adjustable date ranges and
 toggleable event overlays.
