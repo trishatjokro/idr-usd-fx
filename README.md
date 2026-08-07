@@ -117,13 +117,12 @@ python src/analysis.py
 streamlit run app.py
 ```
 
-`pipeline.py` downloads directly from FRED. If your network throttles the FRED
-endpoint, run the bundled patient downloader first — it caches the raw CSVs into
-`data/raw/`, which the pipeline then reads offline:
-
-```bash
-bash scripts/fetch_fred.sh
-```
+`pipeline.py` pulls the ECB reference rates from DBnomics (no API key) and caches
+the raw payload to `data/raw/ecb_exr.json`, so subsequent runs work offline. It
+then tries FRED `DEXINUS` as a cross-check; if FRED is unreachable that step is
+skipped and noted in `data/data_notes.md` rather than failing. The bundled
+`scripts/fetch_fred.sh` is an optional patient downloader for populating the FRED
+cross-check cache where FRED is reachable.
 
 ---
 
