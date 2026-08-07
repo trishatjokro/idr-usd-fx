@@ -51,9 +51,9 @@ day-approximate** — are documented in
 [`events/EVENTS_SOURCES.md`](events/EVENTS_SOURCES.md).
 
 ### Cleaning decisions
-- FRED marks non-trading days (weekends, US bank holidays) with `.`. These rows
-  are **dropped, not forward-filled**, so every observation is real. All returns
-  and volatility are therefore computed on **trading days only**.
+- The source marks non-trading days (weekends, TARGET/bank holidays) as null.
+  These rows are **dropped, not forward-filled**, so every observation is real.
+  All returns and volatility are therefore computed on **trading days only**.
 - Volatility is the standard deviation of daily returns, **annualized with √252**.
 - Full cleaning notes are written to [`data/data_notes.md`](data/data_notes.md).
 
