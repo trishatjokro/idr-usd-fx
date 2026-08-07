@@ -66,12 +66,13 @@ day-approximate** — are documented in
   day's current volatility expressed as a percentile of its own history.
 - **Regime episodes:** the sharpest non-overlapping ~quarter (63-trading-day)
   depreciation and appreciation windows — the "find the story" step.
-- **Event-window study:** for each FOMC / BI meeting, the |5-trading-day forward
-  move| is compared against a baseline of *all* trading days using a
-  **permutation test** (5,000 resamples, fixed seed) — testing whether meetings
-  actually move the rate more than an average day, with a p-value.
-- **Enrichment:** IDR/USD daily-return correlation with Brent crude and with
-  regional Southeast Asian currencies.
+- **Event-window study:** for each FOMC / BI / political event, the |5-trading-day
+  forward move| is compared against a **period-matched baseline** (non-event days
+  within that event kind's own date range — so the calm 2013–2025 era is not
+  compared against the 1999–2008 crisis spikes) using a two-sided **permutation
+  test** (5,000 resamples, fixed seed), reported with a p-value.
+- **Enrichment:** IDR/USD daily-return correlation with the regional Southeast
+  Asian currencies (MYR, THB, SGD, PHP) as a co-movement check.
 
 ---
 
